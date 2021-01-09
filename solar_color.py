@@ -7,7 +7,7 @@ def get_star_data():
         urls = f.readlines()
     for url in urls:
         try:
-            r = get(url)
+            r = get(url[:-1])
             r.raise_for_status()
             content_disposition = r.headers["Content-disposition"]
             filename = search("filename=(.*)", content_disposition).group(1)
