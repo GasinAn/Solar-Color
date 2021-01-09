@@ -4,7 +4,7 @@ from sklearn.manifold import TSNE
 
 def get_star_data():
     with open("url.txt", "r") as f:
-        urls = f.read.split("\n")
+        urls = f.readlines()
     for url in urls:
         try:
             r = get(url)
