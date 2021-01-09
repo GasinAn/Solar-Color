@@ -1,6 +1,6 @@
 from sklearn.manifold import TSNE
 
-def t_SNE(data, perplexity):
+def t_SNE(data, perplexity=30.0):
     """
     data: [spec_0, spec_1,...], has shape (N_data, N_lambda)
     perplexity: perplexity
