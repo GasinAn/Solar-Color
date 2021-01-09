@@ -14,7 +14,7 @@ def get_star_data():
             with open(f"star_data\\{filename}", 'w') as f:
                 f.write(r.text)
         except:
-            print(f"{url} X!")
+            print(f"{url[:-1]} X!")
 
 def t_SNE(data, perplexity=30.0):
     """
