@@ -7,12 +7,14 @@ def get_star_data():
         urls = f.readlines()
     for url in urls:
         try:
-            r = get(url[:-1])
+            r = get(url[:-1], stream=True)
             r.raise_for_status()
             content_disposition = r.headers["Content-disposition"]
             filename = search("filename=(.*)", content_disposition).group(1)
-            with open(f"star_data\\{filename}", 'w') as f:
-                f.write(r.text)
+            with open(f"star_data\\{filename}", "wb") as f:
+                for chunk in r.iter_content(chunk_size=1024):
+                    if chunk:
+                        f.write(chunk)
         except:
             print(f"{url[:-1]} X!")
 
