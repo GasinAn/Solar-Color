@@ -3,6 +3,10 @@ from requests import get
 from sklearn.manifold import TSNE
 
 def get_star_data():
+    """
+    Download star data from LAMOST
+    Need URLs of data, in url.txt
+    """
     with open("url.txt", "r") as f:
         urls = f.readlines()
     for url in urls:
