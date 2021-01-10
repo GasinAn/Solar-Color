@@ -4,7 +4,7 @@ from sklearn.manifold import TSNE
 
 def get_star_data():
     """
-    Download star data from LAMOST
+    Download star data from LAMOST(DR6_v2, STAR:G2)
     Need URLs of data, in url.txt
     """
     with open("url.txt", "r") as f:
@@ -15,7 +15,7 @@ def get_star_data():
             r.raise_for_status()
             content_disposition = r.headers["Content-disposition"]
             filename = search("filename=(.*)", content_disposition).group(1)
-            with open(f"star_data\\{filename}", "wb") as f:
+            with open(f"star_data\\origin\\{filename}", "wb") as f:
                 for chunk in r.iter_content(chunk_size=1024):
                     if chunk:
                         f.write(chunk)
@@ -30,4 +30,4 @@ def t_SNE(data, perplexity=30.0):
     """
     return TSNE(n_components=2, perplexity=perplexity).fit_transform(data)
 
-get_star_data()
+#get_star_data()
