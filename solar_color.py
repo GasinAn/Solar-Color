@@ -1,8 +1,8 @@
 # BnuAstro SpecGroup 1 Solar Color Research
 # Resourse:
-# VizieR J/A+A/611/A1 (Sun Spectrum)
-# URLs in urls.txt (Star Spectra)
-# http://dr6.lamost.org/v2/catdl?name=dr6_v2_stellar_LRS.fits.gz (Star Catalog)
+# VizieR J/A+A/587/A65, spvis.dat.gz.fits (Sun Spectrum)
+# LAMOST DR6 v2, Classification="STAR", subclass="G2", FITS (Star Spectra)
+# LAMOST DR6 v2, LRS A, F, G and K Star Catalog, FITS (Star Catalog)
 
 from astropy.io import fits
 from gzip import GzipFile
