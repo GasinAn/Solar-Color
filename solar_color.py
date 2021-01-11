@@ -4,6 +4,7 @@
 # URLs in urls.txt (Star Spectra)
 # http://dr6.lamost.org/v2/catdl?name=dr6_v2_stellar_LRS.fits.gz (Star Catalog)
 
+from astropy.io import fits
 from gzip import GzipFile
 from os import listdir
 from re import search
@@ -48,6 +49,27 @@ def decompress_star_data():
         except:
             print(f"{gzip_filename} X!")
 
+def get_sun_like_star_data():
+    """
+    Use T_eff, log(g) and [Fe/H] in catalog to get sun-like star data, with:
+    |T_eff-5770|<200 & |log(g)-4.43775|<0.2 & |[Fe/H]|<0.5
+    Return (sun-like star file names, sun-like star spec obsids)
+    """
+    star_filenames = listdir("star_data")[1:]
+    with fits.open("star_catalog\\dr6_v2_stellar_LRS.fits") as hdul:
+        catalog = hdul[1].data
+    catalog = catalog[catalog["subclass"]=="G2"]
+    catalog = catalog[abs(catalog["logg"]-4.43775)<0.2]
+    catalog = catalog[abs(catalog["feh"])<0.5]
+    catalog = catalog[abs(catalog["teff"]-5770)<200]
+    selected_spec_obsids = catalog["obsid"]
+    selected_star_filenames = []
+    for filename in star_filenames:
+        with fits.open(f"star_data\\{filename}") as hdul:
+            if hdul[0].header["OBSID"] in selected_spec_obsids:
+                selected_star_filenames.append(filename)
+    return selected_star_filenames, selected_spec_obsids
+
 def t_SNE(data, perplexity=30.0):
     """
     data: [spec_0, spec_1,...], has shape (N_data, N_lambda)
@@ -56,5 +78,6 @@ def t_SNE(data, perplexity=30.0):
     """
     return TSNE(n_components=2, perplexity=perplexity).fit_transform(data)
 
-#get_star_data()
-#decompress_star_data()
+# get_star_data()
+# decompress_star_data()
+# star_filenames, spec_obsids = get_sun_like_star_data()
