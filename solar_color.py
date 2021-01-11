@@ -1,3 +1,9 @@
+# BnuAstro SpecGroup 1 Solar Color Research
+# Resourse:
+# VizieR J/A+A/611/A1 (Sun Spectrum)
+# URLs in urls.txt (Star Spectra)
+# http://dr6.lamost.org/v2/catdl?name=dr6_v2_stellar_LRS.fits.gz (Star Catalog)
+
 from gzip import GzipFile
 from os import listdir
 from re import search
@@ -10,7 +16,7 @@ def get_star_data():
     Need URLs of data, in url.txt
     Print URL if fail, then download next one 
     """
-    with open("url.txt", "r") as f:
+    with open("urls.txt", "r") as f:
         urls = f.readlines()
     for url in urls:
         try:
