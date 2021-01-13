@@ -4,11 +4,14 @@
 # LAMOST DR6 v2, Classification="STAR", subclass="G2", FITS (Star Spectra)
 # LAMOST DR6 v2, LRS A, F, G and K Star Catalog, FITS (Star Catalog)
 
+import numpy as np
 from astropy.io import fits
 from gzip import GzipFile
 from os import listdir
+from pandas import DataFrame
 from re import search
 from requests import get
+import warnings
 
 def get_star_data():
     """
@@ -49,9 +52,9 @@ def decompress_star_data():
         except:
             print(f"{gzip_filename} X!")
 
-def get_selected_star_data():
+def select_star_data():
     """
-    Use T_eff, log(g) and [Fe/H] in catalog to get sun-like star data, with:
+    Use T_eff, log(g) and [Fe/H] in catalog to select sun-like star data, with:
     |T_eff-5770|<200 & |log(g)-4.43775|<0.2 & |[Fe/H]|<0.5
     """
     star_params = ("tff", "tff_err", "logg", "logg_err", "feh", "feh_err")
@@ -76,20 +79,59 @@ def get_selected_star_data():
                     exec(f"hdul[0].header['{star_param}']={star_param}[index]")
                 hdul.writeto(f"star_data\\selected\\{filename}")
 
+def normalize_star_data():
+    flist = listdir("star_data\\selected")
+    stableindex = np.array([0,200,2001,1771,841,540,339,228,2506,2472,-201,-1])
+    pm = np.array([-5,-4,-3,-2,-1,+1,+2,+3,+4,+5])
+    warnings.filterwarnings("ignore")
+    for fname in flist:
+        with fits.open(f"star_data\\selected\\{fname}") as hdul:
+            odata = hdul[0].data[0]
+            good_data_indexs = range(200, odata.size-200)
+            for i in good_data_indexs:
+                if (hdul[0].data[[4,3],i]!=0).any():
+                    odata[i] = np.mean(odata[i+pm])
+            n_deal = 0
+            need_deal = True
+            while need_deal:
+                need_deal = False
+                for i in good_data_indexs:
+                    odata_i = odata[i]
+                    odata_near = odata[i+pm]
+                if np.std(odata_near, ddof=1)*3<(odata_i-np.mean(odata_near)):
+                    need_deal = True
+                    odata_i = np.mean(odata_near)
+                n_deal += 1
+                if n_deal >= 3:
+                    break
+            selectedindex = []
+            for i in good_data_indexs:
+                if (odata[i+pm]<odata[i]).all():
+                    selectedindex.append(i)
+            selectedindex = np.concatenate((stableindex, selectedindex))
+            ndata = np.full(odata.size, np.nan)
+            ndata[selectedindex] = odata[selectedindex]
+            pandas_dataframe = DataFrame(data=ndata)
+            pandas_dataframe.index = hdul[0].data[2]
+            pandas_dataframe = pandas_dataframe.interpolate(method="values")
+            ndata = pandas_dataframe.to_numpy().reshape(odata.size)
+            hdul[0].data[0] = odata/ndata
+            hdul.writeto(f"star_data\\normalized\\{fname}")
+
 if __name__ == "__main__":
-    get = input("Download star data?([Y]/N)")
-    if get.upper() == "" or get.upper() == "Y":
+    whether_get = input("Download star data?([Y]/N)")
+    if whether_get.upper() == "" or whether_get.upper() == "Y":
         print("Download!")
         get_star_data()
         print("OK!")
     else:
         print("Pass!")
-    decompress = input("Decompress star data?(Y/[N])")
-    if get.upper() == "" or get.upper() == "N":
+    whether_decompress = input("Decompress star data?(Y/[N])")
+    if whether_decompress.upper() == "" or whether_decompress.upper() == "N":
         print("Decompress!")
         decompress_star_data()
         print("OK!")
     else:
         print("Pass!")
     input("Press [Enter] to continue.")
-    get_selected_star_data()
+    select_star_data()
