@@ -125,7 +125,7 @@ def normalize_sun_data():
     """
     Normalize sun data
     """
-    odata = np.load("solar_data\\sun_spec.npy")
+    odata = np.load("sun_data\\sun_spec.npy")
     pm = np.array([-5,-4,-3,-2,-1,+1,+2,+3,+4,+5])
     selectedindex = [0,-1]
     for i in range(5, odata.shape[1]-5):
@@ -143,7 +143,7 @@ def normalize_sun_data():
     hdu.header["ROW1"] = "WAVELENGTH"
     hdu.header["ROW2"] = "FLUX"
     hdul = fits.HDUList([hdu])
-    hdul.writeto("solar_data\\normalized\\normal_sun_spec.fits")
+    hdul.writeto("sun_data\\normalized\\normal_sun_spec.fits")
 
 if __name__ == "__main__":
     whether_get = input("Download star data?([Y]/N)")
