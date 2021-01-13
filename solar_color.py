@@ -80,6 +80,9 @@ def select_star_data():
                 hdul.writeto(f"star_data\\selected\\{filename}")
 
 def normalize_star_data():
+    """
+    Normalize star data
+    """
     flist = listdir("star_data\\selected")
     stableindex = np.array([0,200,2001,1771,841,540,339,228,2506,2472,-201,-1])
     pm = np.array([-5,-4,-3,-2,-1,+1,+2,+3,+4,+5])
@@ -118,6 +121,30 @@ def normalize_star_data():
             hdul[0].data[0] = odata/ndata
             hdul.writeto(f"star_data\\normalized\\{fname}")
 
+def normalize_sun_data():
+    """
+    Normalize sun data
+    """
+    odata = np.load("solar_data\\sun_spec.npy")
+    pm = np.array([-5,-4,-3,-2,-1,+1,+2,+3,+4,+5])
+    selectedindex = [0,-1]
+    for i in range(5, odata.shape[1]-5):
+        if (odata[1][i+pm]<odata[1][i]).all():
+            selectedindex.append([i])
+    ndata = np.full(odata.shape[1], np.nan)
+    ndata[selectedindex] = odata[1][selectedindex]
+    pandas_dataframe = DataFrame(data=ndata)
+    pandas_dataframe.index = odata[0]
+    pandas_dataframe = pandas_dataframe.interpolate(method="values")
+    ndata = pandas_dataframe.to_numpy().reshape(odata.shape[1])
+    odata[1] /= ndata
+    np.save("solar_data\\normalized\\normal_sun_spec.npy", odata)
+    hdu = fits.PrimaryHDU(odata)
+    hdu.header["ROW1"] = "WAVELENGTH"
+    hdu.header["ROW2"] = "FLUX"
+    hdul = fits.HDUList([hdu])
+    hdul.writeto("solar_data\\normalized\\normal_sun_spec.fits")
+
 if __name__ == "__main__":
     whether_get = input("Download star data?([Y]/N)")
     if whether_get.upper() == "" or whether_get.upper() == "Y":
@@ -139,4 +166,7 @@ if __name__ == "__main__":
     print("OK!")
     print("Normalizing star data...")
     normalize_star_data()
+    print("OK!")
+    print("Normalizing sun data...")
+    normalize_sun_data()
     print("OK!")
