@@ -1,0 +1,7 @@
+sun_data/J_A+A_587_A65_spvis.dat.gz.fits
+sun_data/lumda.npy
+sun_data/strength_real.npy
+sun_data/strength_normal.npy
+sun_data/sum_spec.npy
+star_data/*
+star_catalog/*
