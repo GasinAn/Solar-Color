@@ -134,4 +134,9 @@ if __name__ == "__main__":
     else:
         print("Pass!")
     input("Press [Enter] to continue.")
+    print("Selecting star data...")
     select_star_data()
+    print("OK!")
+    print("Normalizing star data...")
+    normalize_star_data()
+    print("OK!")
