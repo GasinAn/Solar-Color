@@ -76,6 +76,20 @@ def get_selected_star_data():
                     exec(f"hdul[0].header['{star_param}']={star_param}[index]")
                 hdul.writeto(f"star_data\\selected\\{filename}")
 
-# get_star_data()
-# decompress_star_data()
-# get_selected_star_data()
+if __name__ == "__main__":
+    get = input("Download star data?([Y]/N)")
+    if get.upper() == "" or get.upper() == "Y":
+        print("Download!")
+        get_star_data()
+        print("OK!")
+    else:
+        print("Pass!")
+    decompress = input("Decompress star data?(Y/[N])")
+    if get.upper() == "" or get.upper() == "N":
+        print("Decompress!")
+        decompress_star_data()
+        print("OK!")
+    else:
+        print("Pass!")
+    input("Press [Enter] to continue.")
+    get_selected_star_data()
